@@ -1,59 +1,57 @@
-// plot configurations
-const margin = 10;
-const eps = 0.000001;
-const dx = 0.1;
-
-// utility variables
-let x_min = -3.1415 * 2;
-let x_max = 3.1415 * 2;
-let y_min = -1;
-let y_max = 1;
-
-
+let plt;
 let slider;
+let slider_value;
+let points = [];
+let x_min = -2;
+let x_max = 2;
+const eps = 1e-7;
 
-function setup() {
-  createCanvas(windowWidth, windowHeight);
-
-  slider = createSlider(0.0, 2.0, 1.0, 0.01);
-  slider.position(10, 10);
-  slider.style('width', '200px');
-}
-
-function transform_coords(x, y){
-  let new_x = map(x, x_min, x_max, 0, width);
-  let new_y = map(y, y_min, y_max, 0, height);
-  return [new_x, new_y];
-}
-
-function draw() {
-  background(0);
-  let c = slider.value();
-
-  let points = [];
-  for(let i=x_min; i<=x_max+eps; i+=dx){
-    let cur_y = f1(i, c);
-    points.push([i, cur_y]);
-  }
-  
-  stroke(255);
-  strokeWeight(4);
-
-  noFill();
-  beginShape();
-  for(let i=0; i<points.length; i++){
-    let x = points[i][0];
-    let y = points[i][1];
-    [x, y] = transform_coords(x, y);
-    vertex(x, y);
-  }
-  endShape();
-}
-
-function f1(x, c){
+function f(x, c) {
   return sin(x) * c;
 }
 
-function windowResized(){
-  resizeCanvas(windowWidth, windowHeight);
+function generatePoints(f, h, c) {
+  let p = [];
+  for (let i = x_min; i <= x_max + eps; i += h) {
+    p.push(new GPoint(i, f(i, c)))
+  }
+  return p
+}
+
+function setup() {
+  createCanvas(windowWidth, windowHeight);
+  slider = createSlider(-2.0, 2.0, 1.0, 0)
+  slider_value = slider.value();
+  points = generatePoints(f, 0.1, slider_value);
+
+  plt = new GPlot(this, 0, 0, width, height);
+  plt.setPoints(points);
+  plt.getXAxis().setAxisLabelText("this is x");
+  plt.getYAxis().setAxisLabelText("this is y");
+  plt.setTitleText("this is title");
+
+  // plt.setXLim();
+  plt.setYLim(-2, 2);
+  // plt.defaultDraw();
+
+}
+
+function draw() {
+  if(slider_value != slider.value()){
+    slider_value = slider.value();
+    points = generatePoints(f, 0.1, slider_value);
+    plt.setPoints(points);
+  }
+
+  background(255);
+  plt.beginDraw();
+  plt.drawBackground();
+  plt.drawBox();
+  plt.drawXAxis();
+  plt.drawYAxis();
+  plt.drawTopAxis();
+  plt.drawRightAxis();
+  plt.drawTitle();
+  plt.drawPoints();
+  plt.endDraw();
 }
