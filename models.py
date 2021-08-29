@@ -54,11 +54,11 @@ class SEIR:
         self.delta = delta
     
     def ds_dt(self, S, E, I, R):
-        N = S + I + R
+        N = S + E + I + R
         return -(self.beta * I * S) / N
     
     def de_dt(self, S, E, I, R):
-        N = S + I + R
+        N = S + E + I + R
         return (self.beta * I * S) / N - self.delta * E
 
     def di_dt(self, S, E, I, R):
