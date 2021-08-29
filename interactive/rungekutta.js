@@ -1,22 +1,15 @@
 let m1 = $M([
     [1, 2, 3],
     [4, 5, 6],
-    [7, 8, 9]
-  ]);
+]);
   
-  let m2 = $M([
+let m2 = $M([
     [2, -1, 7],
     [3, 1, 9],
     [0, 3, 4]
-  ]);
+]);
 
-function arrayAdd(a, b) {
-    return a.map((a_i, i) => a_i + b[i]);
-}
 
-function arrayDiv(a, v) {
-    return a.map(a_i => a_i / v);
-}
 
 function rungekutta(f, y0, ts, args) {
     let temp, temp2;
@@ -55,4 +48,53 @@ function rungekutta(f, y0, ts, args) {
     }
     // array of length ts.length, with each element being 1D array
     return ys;
+}
+
+function fillMatrix(h, w, v){
+    return Matrix.create(Array.from(Array(h), _ => Array(w).fill(v)));
+}
+
+function addElementWise(m, v){
+    let m_d = m.dup();
+    let dim = m.dimensions();
+    let e = m_d.elements;
+    for(var i=0; i<dim.rows; i++){
+        for(var j=0; j<dim.cols; j++){
+            e[i][j] += v;
+        }
+    }
+    return m_d;
+}
+
+function multElementWise(m, v){
+    let m_d = m.dup();
+    let dim = m.dimensions();
+    let e = m_d.elements;
+    for(var i=0; i<dim.rows; i++){
+        for(var j=0; j<dim.cols; j++){
+            e[i][j] *= v;
+        }
+    }
+    return m_d;
+}
+
+function setup() {
+    // print(m1)
+    // print(m1.dimensions(), m1.dimensions().rows)
+    // print(m1.minor(2, 2, 3, 2))
+    // print(m1.dimensions().rows, m1.dimensions().cols)
+
+
+    let c = m1.dup()
+    let ele = c.elements
+    for(var i=0; i<m1.dimensions().rows; i++){
+        for(var j=0; j<m1.dimensions().cols; j++){
+            ele[i][j] += 2;
+        }
+    }
+    print(m1.inspect())
+    print(c.inspect())
+    // print(m2.inspect())
+    // print(m1.multiply(m2).inspect())
+    // print(Matrix.create(Array.from(Array(10), _ => Array(5).fill(-2))).inspect())
 }
