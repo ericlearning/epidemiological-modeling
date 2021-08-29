@@ -16,23 +16,30 @@ let v1 = $V([
 
 function rungekutta(f, y0, ts, args) {
     // f: function(y, t, ...args)
-    // y0: matrix of shape (N)
+    // y0: vector of shape (N)
     // ts: Array of shape (T)
     // args: Array of arguments
 
     let ys = [y0];
     let n = ts.length;
+    let k1, k2, k3, k4;
 
     for(let i=0; i<n-1; i++){
-        // yn_prev: matrix of shape (N)
+        // yn_prev: vector of shape (N)
         let yn_prev = ys[-1];
 
         // floating point numbers
         let tn_prev = ts[i];
         let tn = ts[i + 1];
         let h = tn - tn_prev;
+        
+        k1 = applyVectorEW(yn_prev, f, [tn_prev, ...args]);
+        k1 = multVectorEW(k1, h);
 
-        let k1 = 
+        k2 = applyVectorEW(yn_prev, f, [tn_prev, ...args]);
+        k2 = multVectorEW(k1, h);
+
+
     }
 
 
@@ -95,6 +102,19 @@ function addMatrixEW(m, k){
     return m_d;
 }
 
+function addTwoMatrixEW(m1, m2){
+    let m_d = m1.dup();
+    let dim = m1.dimensions();
+    let e1 = m_d.elements;
+    let e2 = m2.elements;
+    for(var i=0; i<dim.rows; i++){
+        for(var j=0; j<dim.cols; j++){
+            e1[i][j] += e2[i][j];
+        }
+    }
+    return m_d;
+}
+
 function multMatrixEW(m, k){
     let m_d = m.dup();
     let dim = m.dimensions();
@@ -125,6 +145,17 @@ function addVectorEW(v, k){
     let e = v_d.elements;
     for(var i=0; i<dim; i++){
         e[i] += k;
+    }
+    return v_d;
+}
+
+function addTwoVectorEW(v1, v2){
+    let v_d = v1.dup();
+    let dim = v.dimensions();
+    let e1 = v_d.elements;
+    let e2 = v2.elements;
+    for(var i=0; i<dim; i++){
+        e1[i] += e2[i];
     }
     return v_d;
 }
