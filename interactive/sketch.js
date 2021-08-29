@@ -21,7 +21,9 @@ function generatePoints(xs, ys) {
 
 // ODE and a known solution
 function f1(y, t, n) {
-    return n - y[0];
+    let cur_y = y.elements[0];
+    let out = n - cur_y;
+    return Vector.create([out]);
 }
 
 function f1_sol(t, n, init) {
@@ -87,7 +89,7 @@ function draw() {
         init = [init_slider.value()];
         args = [args_slider.value()];
 
-        [t, gt, eu, im, rk] = run_analysis(init, args);
+        [t, gt, eu, im, rk] = run_analysis(f1, init, args);
         gt_points = generatePoints(t, gt.col(1).elements);
         eu_points = generatePoints(t, eu.col(1).elements);
         im_points = generatePoints(t, im.col(1).elements);
