@@ -1,19 +1,3 @@
-let m1 = $M([
-    [1, 2, 3],
-    [4, 5, 6],
-]);
-  
-let m2 = $M([
-    [2, -1, 7],
-    [3, 1, 9],
-    [0, 3, 4]
-]);
-
-let v1 = $V([
-    1, 2, 3
-])
-
-
 function rungekutta(f, y0, ts, args) {
     // f: function(y, t, ...args)
     // y0: vector of shape (N)
@@ -23,6 +7,7 @@ function rungekutta(f, y0, ts, args) {
     let ys = [y0];
     let n = ts.length;
     let k1, k2, k3, k4;
+    let yn;
 
     for(let i=0; i<n-1; i++){
         // yn_prev: vector of shape (N)
@@ -36,49 +21,26 @@ function rungekutta(f, y0, ts, args) {
         k1 = applyVectorEW(yn_prev, f, [tn_prev, ...args]);
         k1 = multVectorEW(k1, h);
 
-        k2 = applyVectorEW(yn_prev, f, [tn_prev, ...args]);
-        k2 = multVectorEW(k1, h);
+        k2 = yn_prev.add(multVectorEW(k1, 1/2))
+        k2 = applyVectorEW(k2, f, [tn_prev+h/2, ...args]);
+        k2 = multVectorEW(k2, h);
 
+        k3 = yn_prev.add(multVectorEW(k2, 1/2))
+        k3 = applyVectorEW(k3, f, [tn_prev+h/2, ...args]);
+        k3 = multVectorEW(k3, h);
 
+        k4 = yn_prev.add(k3)
+        k4 = applyVectorEW(k4, f, [tn, ...args]);
+        k4 = multVectorEW(k4, h);
+
+        yn = k1.add(multMatrixEW(k2, 2)).add(multMatrixEW(k3, 2)).add(k4);
+        yn = yn_prev.add(multVectorEW(yn, 1/6));
+
+        ys.append(yn.dup());
     }
 
-
-
-
-
-
-    for (let i = 0; i < n - 1; i++) {
-        // yn_prev is a 1D array
-        let yn_prev = ys[-1];
-        let tn_prev = ts[i];
-        let tn = ts[i + 1];
-        let h = tn - tn_prev;
-
-        // quite a mess; convert to sylvester later
-        temp = yn_prev;
-        temp2 = tn_prev;
-        let k1 = h * yn_prev.map(y => f(temp, temp2, ...args));
-
-        temp = arrayAdd(yn_prev, arrayDiv(k1, 2));
-        temp2 = tn_prev + h / 2;
-        let k2 = h * yn_prev.map(y => f(temp, temp2, ...args));
-
-        temp = arrayAdd(yn_prev, arrayDiv(k2, 2));
-        temp2 = tn_prev + h / 2;
-        let k3 = h * yn_prev.map(y => f(temp, temp2, ...args));
-
-        temp = arrayAdd(yn_prev, k3);
-        temp2 = tn;
-        let k4 = h * yn_prev.map(y => f(temp, temp2, ...args));
-
-        let yn = []
-        for (let j = 0; j < k1.length; j++) {
-            let cur_yn = yn_prev[j] + (k1[j] + 2 * k2[j] + 2 * k3[j] + k4[j]) / 6.0;
-            yn.push(cur_yn);
-        }
-        ys.push([...yn]);
-    }
-    // array of length ts.length, with each element being 1D array
+    // Matrix of shape (T, N)
+    ys = Matrix.create(ys.map(yi => yi.elements));
     return ys;
 }
 
@@ -102,18 +64,18 @@ function addMatrixEW(m, k){
     return m_d;
 }
 
-function addTwoMatrixEW(m1, m2){
-    let m_d = m1.dup();
-    let dim = m1.dimensions();
-    let e1 = m_d.elements;
-    let e2 = m2.elements;
-    for(var i=0; i<dim.rows; i++){
-        for(var j=0; j<dim.cols; j++){
-            e1[i][j] += e2[i][j];
-        }
-    }
-    return m_d;
-}
+// function addTwoMatrixEW(m1, m2){
+//     let m_d = m1.dup();
+//     let dim = m1.dimensions();
+//     let e1 = m_d.elements;
+//     let e2 = m2.elements;
+//     for(var i=0; i<dim.rows; i++){
+//         for(var j=0; j<dim.cols; j++){
+//             e1[i][j] += e2[i][j];
+//         }
+//     }
+//     return m_d;
+// }
 
 function multMatrixEW(m, k){
     let m_d = m.dup();
@@ -149,16 +111,16 @@ function addVectorEW(v, k){
     return v_d;
 }
 
-function addTwoVectorEW(v1, v2){
-    let v_d = v1.dup();
-    let dim = v.dimensions();
-    let e1 = v_d.elements;
-    let e2 = v2.elements;
-    for(var i=0; i<dim; i++){
-        e1[i] += e2[i];
-    }
-    return v_d;
-}
+// function addTwoVectorEW(v1, v2){
+//     let v_d = v1.dup();
+//     let dim = v.dimensions();
+//     let e1 = v_d.elements;
+//     let e2 = v2.elements;
+//     for(var i=0; i<dim; i++){
+//         e1[i] += e2[i];
+//     }
+//     return v_d;
+// }
 
 function multVectorEW(v, k){
     let v_d = v.dup();
