@@ -29,11 +29,7 @@ function setup() {
   plt.getXAxis().setAxisLabelText("this is x");
   plt.getYAxis().setAxisLabelText("this is y");
   plt.setTitleText("this is title");
-
-  // plt.setXLim();
   plt.setYLim(-2, 2);
-  // plt.defaultDraw();
-
 }
 
 function draw() {
