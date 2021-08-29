@@ -68,12 +68,12 @@ class SEIR{
     }
     
     ds_dt = (S, E, I, R) => {
-        let N = S + I + R;
+        let N = S + E + I + R;
         return -(this.beta * I * S) / N;
     }
     
     de_dt = (S, E, I, R) => {
-        let N = S + I + R;
+        let N = S + E + I + R;
         return (this.beta * I * S) / N - this.delta * E;
     }
 
