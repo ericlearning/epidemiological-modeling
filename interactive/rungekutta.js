@@ -6,7 +6,6 @@ function rungekutta(f, y0, ts, args) {
 
     let ys = [y0];
     let n = ts.length;
-    let k1, k2, k3, k4;
     let yn;
 
     for(let i=0; i<n-1; i++){
@@ -18,6 +17,7 @@ function rungekutta(f, y0, ts, args) {
         let tn = ts[i + 1];
         let h = tn - tn_prev;
         
+        let k1, k2, k3, k4;
         k1 = applyVectorEW(yn_prev, f, [tn_prev, ...args]);
         k1 = multVectorEW(k1, h);
 
@@ -33,7 +33,7 @@ function rungekutta(f, y0, ts, args) {
         k4 = applyVectorEW(k4, f, [tn, ...args]);
         k4 = multVectorEW(k4, h);
 
-        yn = k1.add(multMatrixEW(k2, 2)).add(multMatrixEW(k3, 2)).add(k4);
+        yn = k1.add(multVectorEW(k2, 2)).add(multVectorEW(k3, 2)).add(k4);
         yn = yn_prev.add(multVectorEW(yn, 1/6));
 
         ys.push(yn.dup());
@@ -42,25 +42,4 @@ function rungekutta(f, y0, ts, args) {
     // Matrix of shape (T, N)
     ys = Matrix.create(ys.map(yi => yi.elements));
     return ys;
-}
-
-function f1(y, t, n){
-    return n-y;
-}
-
-function f1_sol(t, n, init){
-    return (init-n) * exp(-t) + n;
-}
-
-function setup() {
-    let t_min = 0.0;
-    let t_max = 10.0;
-    let h = 0.01;
-    let args = [12];
-    let init = 7.0;
-    let t = range(t_min, t_max, h)
-
-    let gt = t.map(cur_t => f1_sol(cur_t, ...args, init));
-    let rk = rungekutta(f1, Vector.create([init]), t, args);
-    rk = rk.col(1).elements;
 }

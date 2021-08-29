@@ -104,3 +104,8 @@ function applyVectorEW(v, f, args){
     }
     return v_d;
 }
+
+function batchinf(f_sol, init, t, args){
+    let o = t.map(cur_t => init.elements.map(init_i => f_sol(cur_t, ...args, init_i)));
+    return Matrix.create(o);
+}
