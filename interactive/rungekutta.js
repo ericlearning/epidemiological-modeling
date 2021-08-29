@@ -22,6 +22,24 @@ function rungekutta(f, y0, ts, args) {
 
     let ys = [y0];
     let n = ts.length;
+
+    for(let i=0; i<n-1; i++){
+        // yn_prev: matrix of shape (N)
+        let yn_prev = ys[-1];
+
+        // floating point numbers
+        let tn_prev = ts[i];
+        let tn = ts[i + 1];
+        let h = tn - tn_prev;
+
+        let k1 = 
+    }
+
+
+
+
+
+
     for (let i = 0; i < n - 1; i++) {
         // yn_prev is a 1D array
         let yn_prev = ys[-1];
@@ -89,6 +107,18 @@ function multMatrixEW(m, k){
     return m_d;
 }
 
+function applyMatrixEW(m, f, args){
+    let m_d = m.dup();
+    let dim = m.dimensions();
+    let e = m_d.elements;
+    for(var i=0; i<dim.rows; i++){
+        for(var j=0; j<dim.cols; j++){
+            e[i][j] = f(e[i][j], ...args);
+        }
+    }
+    return m_d;
+}
+
 function addVectorEW(v, k){
     let v_d = v.dup();
     let dim = v.dimensions();
@@ -105,6 +135,16 @@ function multVectorEW(v, k){
     let e = v_d.elements;
     for(var i=0; i<dim; i++){
         e[i] *= k;
+    }
+    return v_d;
+}
+
+function applyVectorEW(v, f, args){
+    let v_d = v.dup();
+    let dim = m.dimensions();
+    let e = v_d.elements;
+    for(var i=0; i<dim; i++){
+        e[i] = f(e[i], ...args);
     }
     return v_d;
 }
