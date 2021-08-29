@@ -21,7 +21,7 @@ function generatePoints(xs, ys) {
 
 // ODE and a known solution
 function f1(y, t, n) {
-    return n - y;
+    return n - y[0];
 }
 
 function f1_sol(t, n, init) {
@@ -29,7 +29,7 @@ function f1_sol(t, n, init) {
 }
 
 // run rungekutta, return t, solution, and prediction
-function run_analysis(init=[7.0], args=[12]) {
+function run_analysis(f, init=[7.0], args=[12]) {
     // init: vector of shape N
     // f1, f1_sol: takes in a single element
 
@@ -46,30 +46,26 @@ function run_analysis(init=[7.0], args=[12]) {
     let t = range(t_min, t_max, h)
 
     let gt = batchinf(f1_sol, init, t, args);
-    let eu = euler(f1, init, t, args);
-    let im = improved_euler(f1, init, t, args);
-    let rk = rungekutta(f1, init, t, args);
-    gt = gt.col(1).elements;
-    eu = eu.col(1).elements;
-    im = im.col(1).elements;
-    rk = rk.col(1).elements;
+    let eu = euler(f, init, t, args);
+    let im = improved_euler(f, init, t, args);
+    let rk = rungekutta(f, init, t, args);
     return [t, gt, eu, im, rk];
 }
 
 // setup the visualizations for the analyses
 function setup() {
-    createCanvas(windowWidth, windowHeight);
+    createCanvas(500, 500);
 
     init_slider = createSlider(-20.0, 20.0, 7.0, 0)
     args_slider = createSlider(-20.0, 20.0, 12.0, 0)
     init = [init_slider.value()];
     args = [args_slider.value()];
 
-    [t, gt, eu, im, rk] = run_analysis(init, args);
-    gt_points = generatePoints(t, gt);
-    eu_points = generatePoints(t, eu);
-    im_points = generatePoints(t, im);
-    rk_points = generatePoints(t, rk);
+    [t, gt, eu, im, rk] = run_analysis(f1, init, args);
+    gt_points = generatePoints(t, gt.col(1).elements);
+    eu_points = generatePoints(t, eu.col(1).elements);
+    im_points = generatePoints(t, im.col(1).elements);
+    rk_points = generatePoints(t, rk.col(1).elements);
 
     plt = new GPlot(this, 0, 0, width, height);
     plt.addLayer("gt_points", gt_points);
@@ -92,10 +88,10 @@ function draw() {
         args = [args_slider.value()];
 
         [t, gt, eu, im, rk] = run_analysis(init, args);
-        gt_points = generatePoints(t, gt);
-        eu_points = generatePoints(t, eu);
-        im_points = generatePoints(t, im);
-        rk_points = generatePoints(t, rk);
+        gt_points = generatePoints(t, gt.col(1).elements);
+        eu_points = generatePoints(t, eu.col(1).elements);
+        im_points = generatePoints(t, im.col(1).elements);
+        rk_points = generatePoints(t, rk.col(1).elements);
 
         plt.getLayer("gt_points").setPoints(gt_points);
         plt.getLayer("eu_points").setPoints(eu_points);
