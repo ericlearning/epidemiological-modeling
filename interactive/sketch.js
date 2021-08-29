@@ -4,11 +4,11 @@ let slider;
 let slider_value;
 let x_min = -2;
 let x_max = 2;
-let gt_points, eu_points, rk_points;
+let gt_points, eu_points, im_points, rk_points;
 const eps = 1e-7;
 
 // t, solution, and predictions
-let t, gt, eu, rk;
+let t, gt, eu, im, rk;
 
 // generate points for the plot given xs, ys
 function generatePoints(xs, ys) {
@@ -47,13 +47,16 @@ function run_analysis(init=[7.0], args=[12]) {
 
     let gt = batchinf(f1_sol, init, t, args);
     let eu = euler(f1, init, t, args);
+    let im = improved_euler(f1, init, t, args);
     let rk = rungekutta(f1, init, t, args);
     gt = gt.col(1).elements;
     eu = eu.col(1).elements;
+    im = im.col(1).elements;
     rk = rk.col(1).elements;
-    return [t, gt, eu, rk];
+    return [t, gt, eu, im, rk];
 }
 
+// setup the visualizations for the analyses
 function setup() {
     createCanvas(windowWidth, windowHeight);
 
@@ -62,9 +65,10 @@ function setup() {
     init = [init_slider.value()];
     args = [args_slider.value()];
 
-    [t, gt, eu, rk] = run_analysis(init, args);
+    [t, gt, eu, im, rk] = run_analysis(init, args);
     gt_points = generatePoints(t, gt);
     eu_points = generatePoints(t, eu);
+    im_points = generatePoints(t, im);
     rk_points = generatePoints(t, rk);
 
     plt = new GPlot(this, 0, 0, width, height);
@@ -72,6 +76,8 @@ function setup() {
     plt.getLayer("gt_points").setPointColor(color(255, 0, 0));
     plt.addLayer("eu_points", eu_points);
     plt.getLayer("eu_points").setPointColor(color(0, 255, 0));
+    plt.addLayer("im_points", im_points);
+    plt.getLayer("im_points").setPointColor(color(255, 255, 0));
     plt.addLayer("rk_points", rk_points);
     plt.getLayer("rk_points").setPointColor(color(0, 0, 255));
     plt.getXAxis().setAxisLabelText("this is x");
@@ -79,18 +85,21 @@ function setup() {
     plt.setTitleText("this is title");
 }
 
+// draw the plot and update them based on slider value
 function draw() {
     if (init[0] != init_slider.value() || args[0] != args_slider.value()) {
         init = [init_slider.value()];
         args = [args_slider.value()];
 
-        [t, gt, eu, rk] = run_analysis(init, args);
+        [t, gt, eu, im, rk] = run_analysis(init, args);
         gt_points = generatePoints(t, gt);
         eu_points = generatePoints(t, eu);
+        im_points = generatePoints(t, im);
         rk_points = generatePoints(t, rk);
 
         plt.getLayer("gt_points").setPoints(gt_points);
         plt.getLayer("eu_points").setPoints(eu_points);
+        plt.getLayer("im_points").setPoints(im_points);
         plt.getLayer("rk_points").setPoints(rk_points);
     }
 
