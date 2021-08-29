@@ -9,10 +9,17 @@ let m2 = $M([
     [0, 3, 4]
 ]);
 
+let v1 = $V([
+    1, 2, 3
+])
 
 
 function rungekutta(f, y0, ts, args) {
-    let temp, temp2;
+    // f: function(y, t, ...args)
+    // y0: matrix of shape (N)
+    // ts: Array of shape (T)
+    // args: Array of arguments
+
     let ys = [y0];
     let n = ts.length;
     for (let i = 0; i < n - 1; i++) {
@@ -50,32 +57,56 @@ function rungekutta(f, y0, ts, args) {
     return ys;
 }
 
-function fillMatrix(h, w, v){
-    return Matrix.create(Array.from(Array(h), _ => Array(w).fill(v)));
+function fillMatrix(h, w, k){
+    return Matrix.create(Array.from(Array(h), _ => Array(w).fill(k)));
 }
 
-function addElementWise(m, v){
+function fillVector(h, k){
+    return Vector.create(Array(h).fill(k));
+}
+
+function addMatrixEW(m, k){
     let m_d = m.dup();
     let dim = m.dimensions();
     let e = m_d.elements;
     for(var i=0; i<dim.rows; i++){
         for(var j=0; j<dim.cols; j++){
-            e[i][j] += v;
+            e[i][j] += k;
         }
     }
     return m_d;
 }
 
-function multElementWise(m, v){
+function multMatrixEW(m, k){
     let m_d = m.dup();
     let dim = m.dimensions();
     let e = m_d.elements;
     for(var i=0; i<dim.rows; i++){
         for(var j=0; j<dim.cols; j++){
-            e[i][j] *= v;
+            e[i][j] *= k;
         }
     }
     return m_d;
+}
+
+function addVectorEW(v, k){
+    let v_d = v.dup();
+    let dim = v.dimensions();
+    let e = v_d.elements;
+    for(var i=0; i<dim; i++){
+        e[i] += k;
+    }
+    return v_d;
+}
+
+function multVectorEW(v, k){
+    let v_d = v.dup();
+    let dim = v.dimensions();
+    let e = v_d.elements;
+    for(var i=0; i<dim; i++){
+        e[i] *= k;
+    }
+    return v_d;
 }
 
 function setup() {
@@ -94,6 +125,9 @@ function setup() {
     }
     print(m1.inspect())
     print(c.inspect())
+
+    print(v1.dimensions())
+
     // print(m2.inspect())
     // print(m1.multiply(m2).inspect())
     // print(Matrix.create(Array.from(Array(10), _ => Array(5).fill(-2))).inspect())
