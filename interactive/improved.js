@@ -17,12 +17,14 @@ function improved_euler(f, y0, ts, args) {
         let tn = ts[i + 1];
         let h = tn - tn_prev;
 
-        let k;
-        k = applyVectorEW(yn_prev, f, [tn_prev, ...args]);
-        yn_euler = yn_prev.add(multVectorEW(k, h));
+        let k1, k2;
+        // k1 = applyVectorEW(yn_prev, f, [tn_prev, ...args]);
+        k1 = f(yn_prev, tn_prev, ...args);
+        yn_euler = yn_prev.add(multVectorEW(k1, h));
 
-        k = k.add(applyVectorEW(yn_euler, f, [tn, ...args]));
-        yn = yn_prev.add(multVectorEW(k, h/2));
+        // k2 = applyVectorEW(yn_euler, f, [tn, ...args])
+        k2 = f(yn_euler, tn, ...args);
+        yn = yn_prev.add(multVectorEW(k1.add(k2), h/2));
 
         ys.push(yn.dup());
     }

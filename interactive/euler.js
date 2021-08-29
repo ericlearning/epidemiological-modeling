@@ -18,7 +18,8 @@ function euler(f, y0, ts, args) {
         let tn = ts[i + 1];
         let h = tn - tn_prev;
 
-        k = applyVectorEW(yn_prev, f, [tn_prev, ...args]);
+        // k = applyVectorEW(yn_prev, f, [tn_prev, ...args]);
+        k = f(yn_prev, tn_prev, ...args);
         k = multVectorEW(k, h);
         yn = yn_prev.add(k)
 
