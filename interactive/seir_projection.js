@@ -8,18 +8,19 @@ const s = (p) => {
     let useFixedN = true;
     
     let colors = [p.color(0, 0, 255),
+                  p.color(255, 128, 0),
                   p.color(255, 0, 0),
                   p.color(0, 255, 0)];
-    let title = "SIR Model";
-    let layerNames = ["S", "I", "R"];
-    let legends = ["Susceptible", "Infected", "Recovered"];
-    let initValue = [[0, N, N - 2000], [0, N, 2000], [0, N, 0]];
+    let title = "SEIR Model";
+    let layerNames = ["S", "E", "I", "R"];
+    let legends = ["Susceptible", "Exposed", "Infected", "Recovered"];
+    let initValue = [[0, N, N - 2000], [0, N, 2000], [0, N, 0], [0, N, 0]];
 
     // t, solution, and predictions
     let t, gt, rk;
 
     // ODE of the projection model
-    let model = new SIR(0.7, 0.2);
+    let model = new SEIR(0.7, 0.2, 0.3);
 
     // setup the visualizations for the analyses
     p.setup = () => {

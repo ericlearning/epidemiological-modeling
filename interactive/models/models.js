@@ -52,6 +52,7 @@ class SIRS{
 
     interact = (all, t) => {
         let S, I, R;
+        let ds_dt, di_dt, dr_dt;
         [S, I, R] = all.elements;
         ds_dt = this.ds_dt(S, I, R);
         di_dt = this.di_dt(S, I, R);
@@ -87,6 +88,7 @@ class SEIR{
 
     interact = (all, t) => {
         let S, E, I, R;
+        let ds_dt, de_dt, di_dt, dr_dt;
         [S, E, I, R] = all.elements;
         ds_dt = this.ds_dt(S, E, I, R);
         de_dt = this.de_dt(S, E, I, R);
@@ -120,6 +122,7 @@ class SIRVital{
     
     interact = (all, t) => {
         let S, I, R;
+        let ds_dt, di_dt, dr_dt;
         [S, I, R] = all.elements;
         ds_dt = this.ds_dt(S, I, R);
         di_dt = this.di_dt(S, I, R);

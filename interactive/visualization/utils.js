@@ -1,20 +1,20 @@
-function sliderInit(sliderInit, p=null) {
+function sliderInit(initValue, p=null) {
     let out = [];
     let initVal = [];
-    for (let i = 0; i < sliderInit.length; i++) {
+    for (let i = 0; i < initValue.length; i++) {
         let cur_slider;
         if (p == null){
-            cur_slider = createSlider(sliderInit[i][0],
-                sliderInit[i][1], sliderInit[i][2], 0);
+            cur_slider = createSlider(initValue[i][0],
+                initValue[i][1], initValue[i][2], 0);
         }
         else{
-            cur_slider = p.createSlider(sliderInit[i][0],
-                sliderInit[i][1], sliderInit[i][2], 0);
+            cur_slider = p.createSlider(initValue[i][0],
+                initValue[i][1], initValue[i][2], 0);
         }
         cur_slider.position(80, i * 20 + 50);
         cur_slider.style('width', '150px');
         out.push(cur_slider)
-        initVal.push(sliderInit[i][2]);
+        initVal.push(initValue[i][2]);
     }
     return [out, initVal];
 }
@@ -117,8 +117,4 @@ function drawPlot(plt) {
     plt.drawPoints();
     plt.drawLines();
     plt.endDraw();
-}
-
-function fixedN() {
-    useFixedN = this.checked();
 }

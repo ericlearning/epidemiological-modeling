@@ -5,7 +5,13 @@ let checkbox;
 let h = 0.1;
 let N = 20000.0;
 let useFixedN = true;
-let colors = [[0, 0, 255], [255, 0, 0], [0, 255, 0]];
+let colors = [p.color(0, 0, 255),
+              p.color(255, 0, 0),
+              p.color(0, 255, 0)];
+let title = "SIR Model";
+let layerNames = ["S", "I", "R"];
+let legends = ["Susceptible", "Infected", "Recovered"];
+let initValue = [[0, N, N - 2000], [0, N, 2000], [0, N, 0]];
 
 // t, solution, and predictions
 let t, gt, rk;
@@ -17,7 +23,7 @@ let model = new SIR(0.7, 0.2);
 function setup() {
     createCanvas(500, 500);
 
-    [sliders, init] = sliderInit([[0, N, N - 2000], [0, N, 2000], [0, N, 0]]);
+    [sliders, init] = sliderInit(initValue);
     checkbox = checkboxInit(sliders[0], fixedN);
 
     args = [];
@@ -25,11 +31,11 @@ function setup() {
     points = generatePointsMulti(t, rk, sliders.length);
 
     plt = new GPlot(this, 0, 0, width, height);
-    plt.setTitleText("SIR Model");
+    plt.setTitleText(title);
     plt.getXAxis().setAxisLabelText("Time (days)");
     plt.getYAxis().setAxisLabelText("Population");
     plt.setYLim(-2000.0, 26000.0);
-    addLayers(plt, ["S", "I", "R"], points, colors);
+    addLayers(plt, layerNames, points, colors);
 }
 
 // draw the plot and update them based on slider value
@@ -39,7 +45,7 @@ function draw() {
         args = [];
         [t, rk] = run_analysis(model.interact, init, args, h = h);
         points = generatePointsMulti(t, rk, sliders.length);
-        setLayers(plt, ["S", "I", "R"], points);
+        setLayers(plt, layerNames, points);
     }
 
     let realN = init.reduce((a, b) => a + b, 0);
@@ -48,10 +54,13 @@ function draw() {
         for (let i = 0; i < sliders.length; i++) {
             sliders[i].value(init[i] + diff);
         }
-        realN = N;
+        realN = getSliderValues(sliders).reduce((a, b) => a + b, 0);
     }
 
     drawPlot(plt);
-    drawUI(sliders, ["Susceptible", "Infected", "Recovered"],
-        checkbox, realN, colors);
+    drawUI(sliders, legends, checkbox, realN, colors);
+}
+
+function fixedN() {
+    useFixedN = this.checked();
 }
