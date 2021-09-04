@@ -47,3 +47,18 @@ function rungekutta(f, y0, ts, args) {
     ys = Matrix.create(ys.map(yi => yi.elements));
     return ys;
 }
+
+// run rungekutta, return t, solution, and prediction
+function run_analysis(f, init=[7.0], args=[12], t_min=0.0, t_max=10.0, h=0.1) {
+    // init: vector of shape N
+    // f1, f1_sol: takes in a single element
+
+    // rungekutta: applies f1 over each element of init
+    //             to return Matrix of shape (T, N)
+
+    init = Vector.create(init);
+    let t = range(t_min, t_max, h)
+
+    let rk = rungekutta(f, init, t, args);
+    return [t, rk];
+}

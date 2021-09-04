@@ -5,6 +5,7 @@ let slider_value;
 let x_min = -2;
 let x_max = 2;
 let rk_points;
+let N = 20000.0;
 const eps = 1e-7;
 
 // t, solution, and predictions
@@ -22,32 +23,13 @@ function generatePoints(xs, ys) {
 // ODE of the projection model
 let model = new SIR(0.7, 0.2);
 
-// run rungekutta, return t, solution, and prediction
-function run_analysis(f, init=[7.0], args=[12]) {
-    // init: vector of shape N
-    // f1, f1_sol: takes in a single element
-
-    // rungekutta: applies f1 over each element of init
-    //             to return Matrix of shape (T, N)
-
-    init = Vector.create(init);
-
-    let t_min = 0.0;
-    let t_max = 10.0;
-    let h = 0.1;
-    let t = range(t_min, t_max, h)
-
-    let rk = rungekutta(f, init, t, args);
-    return [t, rk];
-}
-
 // setup the visualizations for the analyses
 function setup() {
     createCanvas(500, 500);
 
-    init_S = createSlider(0.0, 20000.0, 20000.0, 0)
-    init_I = createSlider(0.0, 20000.0, 1.0, 0)
-    init_R = createSlider(0.0, 20000.0, 0.0, 0)
+    init_S = createSlider(0, N, N-1, 0)
+    init_I = createSlider(0, N, 1, 0)
+    init_R = createSlider(0, N, 0, 0)
     init = [init_S.value(), init_I.value(), init_R.value()];
     args = [];
 
@@ -83,6 +65,13 @@ function draw() {
         plt.getLayer("S").setPoints(S_points);
         plt.getLayer("I").setPoints(I_points);
         plt.getLayer("R").setPoints(R_points);
+    }
+
+    if (init[0] + init[1] + init[2] != N){
+        let diff = N - (init[0] + init[1] + init[2]);
+        init_S.value();
+        init_I.value();
+        init_R.value();
     }
 
     background(255);
