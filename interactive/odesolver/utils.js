@@ -1,3 +1,18 @@
+// run rungekutta, return t, solution, and prediction
+function run_analysis(f, init=[7.0], args=[12], t_min=0.0, t_max=10.0, h=0.1) {
+    // init: vector of shape N
+    // f1, f1_sol: takes in a single element
+
+    // rungekutta: applies f1 over each element of init
+    //             to return Matrix of shape (T, N)
+
+    init = Vector.create(init);
+    let t = range(t_min, t_max, h)
+
+    let rk = rungekutta(f, init, t, args);
+    return [t, rk];
+}
+
 function range(st, en, step){
     let eps=1e-7;
     let xs = []
