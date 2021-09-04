@@ -1,4 +1,10 @@
-function sliderInit(initValue, p=null) {
+function changeModelParam(model, modelParam, param){
+    for (let i=0; i<modelParam.length; i++){
+        model[modelParam[i]] = initParam[i];
+    }
+}
+
+function sliderInit(initValue, x, y, w, p=null) {
     let out = [];
     let initVal = [];
     for (let i = 0; i < initValue.length; i++) {
@@ -11,8 +17,8 @@ function sliderInit(initValue, p=null) {
             cur_slider = p.createSlider(initValue[i][0],
                 initValue[i][1], initValue[i][2], 0);
         }
-        cur_slider.position(80, i * 20 + 50);
-        cur_slider.style('width', '150px');
+        cur_slider.position(x, i * y[0] + y[1]);
+        cur_slider.style('width', w + 'px');
         out.push(cur_slider)
         initVal.push(initValue[i][2]);
     }
@@ -31,20 +37,23 @@ function checkboxInit(ref, f, p=null) {
     return checkbox;
 }
 
-function drawUI(sliders, sliderTexts, checkbox, realN, colors, p=null){
+function drawUI(sliders, slidersParam, legends, legendsParam, checkbox, realN, colors, p=null){
     if (p == null){
-        drawUIGlobal(sliders, sliderTexts, checkbox, realN, colors);
+        drawUIGlobal(sliders, slidersParam, legends, legendsParam, checkbox, realN, colors);
     }
     else{
-        drawUIInstance(sliders, sliderTexts, checkbox, realN, colors, p);
+        drawUIInstance(sliders, slidersParam, legends, legendsParam, checkbox, realN, colors, p);
     }
 }
 
-function drawUIGlobal(sliders, sliderTexts, checkbox, realN, colors) {
+function drawUIGlobal(sliders, slidersParam, legends, legendsParam, checkbox, realN, colors) {
     fill(0);
     textSize(14);
     for (let i = 0; i < sliders.length; i++) {
-        text(sliderTexts[i], sliders[i].x + sliders[i].width + 25, sliders[i].y + 17);
+        text(legends[i], sliders[i].x + sliders[i].width + 25, sliders[i].y + 17);
+    }
+    for (let i = 0; i < slidersParam.length; i++) {
+        text(legendsParam[i], slidersParam[i].x + slidersParam[i].width + 12, slidersParam[i].y + 17);
     }
     text('Fixed N', checkbox.x + 27, sliders[0].y + 17)
     textSize(12);
@@ -58,11 +67,14 @@ function drawUIGlobal(sliders, sliderTexts, checkbox, realN, colors) {
     }
 }
 
-function drawUIInstance(sliders, sliderTexts, checkbox, realN, colors, p) {
+function drawUIInstance(sliders, slidersParam, legends, legendsParam, checkbox, realN, colors, p) {
     p.fill(0);
     p.textSize(14);
     for (let i = 0; i < sliders.length; i++) {
-        p.text(sliderTexts[i], sliders[i].x + sliders[i].width + 25, sliders[i].y + 17);
+        p.text(legends[i], sliders[i].x + sliders[i].width + 25, sliders[i].y + 17);
+    }
+    for (let i = 0; i < slidersParam.length; i++) {
+        p.text(legendsParam[i], slidersParam[i].x + slidersParam[i].width + 12, slidersParam[i].y + 17);
     }
     p.text('Fixed N', checkbox.x + 27, sliders[0].y + 17)
     p.textSize(12);

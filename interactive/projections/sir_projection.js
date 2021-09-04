@@ -2,6 +2,7 @@ const s = (p) => {
     // plotting parameters
     let plt;
     let sliders;
+    let slidersParam;
     let checkbox;
     let h = 0.1;
     let N = 20000.0;
@@ -10,23 +11,28 @@ const s = (p) => {
     let colors = [p.color(0, 0, 255),
                   p.color(255, 0, 0),
                   p.color(0, 255, 0)];
-    let title = "SIRS Model";
+    let title = "SIR Model";
     let layerNames = ["S", "I", "R"];
     let legends = ["Susceptible", "Infected", "Recovered"];
+    let legendsParam = ["β", "γ"];
     let initValue = [[0, N, N - 2000], [0, N, 2000], [0, N, 0]];
+    let initValueParam = [[0, 1.0, 0.7], [0, 1.0, 0.2]];
 
     // t, solution, and predictions
     let t, gt, rk;
 
     // ODE of the projection model
-    let model = new SIRS(0.7, 0.2, 0.3);
+    let model = new SIR(0.7, 0.2);
+    let modelParam = ["beta", "gamma"];
 
     // setup the visualizations for the analyses
     p.setup = () => {
         canvas = p.createCanvas(500, 500);
 
-        [sliders, init] = sliderInit(initValue, p=p);
+        [sliders, init] = sliderInit(initValue, 80, [20, 50], 150, p=p);
+        [slidersParam, initParam] = sliderInit(initValueParam, 385, [20, 110], 50, p=p);
         checkbox = checkboxInit(sliders[0], p.fixedN, p=p);
+        changeModelParam(model, modelParam, initParam)
 
         args = [];
         [t, rk] = run_analysis(model.interact, init, args, h = h);
@@ -42,8 +48,11 @@ const s = (p) => {
 
     // draw the plot and update them based on slider value
     p.draw = () => {
-        if (JSON.stringify(init) != JSON.stringify(getSliderValues(sliders))) {
+        if (JSON.stringify(init) != JSON.stringify(getSliderValues(sliders)) || 
+            JSON.stringify(initParam) != JSON.stringify(getSliderValues(slidersParam))) {
             init = getSliderValues(sliders);
+            initParam = getSliderValues(slidersParam);
+            changeModelParam(model, modelParam, initParam)
             args = [];
             [t, rk] = run_analysis(model.interact, init, args, h = h);
             points = generatePointsMulti(t, rk, sliders.length);
@@ -61,7 +70,7 @@ const s = (p) => {
 
         p.background(255);
         drawPlot(plt);
-        drawUI(sliders, legends, checkbox, realN, colors, p=p);
+        drawUI(sliders, slidersParam, legends, legendsParam, checkbox, realN, colors, p=p);
     };
 
     p.fixedN = () => {

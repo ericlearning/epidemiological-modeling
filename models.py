@@ -1,7 +1,7 @@
 import numpy as np
 
 class SIR:
-    def __init__(self, beta, gamma, ):
+    def __init__(self, beta, gamma):
         self.beta = beta
         self.gamma = gamma
     
