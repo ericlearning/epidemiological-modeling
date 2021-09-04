@@ -1,3 +1,12 @@
+// generate points for the plot given xs, ys
+function generatePoints(xs, ys) {
+    let p = [];
+    for (let i = 0; i <= xs.length; i++) {
+        p.push(new GPoint(xs[i], ys[i]));
+    }
+    return p
+}
+
 // run rungekutta, return t, solution, and prediction
 function run_analysis(f, init=[7.0], args=[12], t_min=0.0, t_max=10.0, h=0.1) {
     // init: vector of shape N
